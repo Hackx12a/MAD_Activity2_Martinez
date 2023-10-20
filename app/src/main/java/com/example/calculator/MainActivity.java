@@ -84,13 +84,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Context context = Context.enter();
             context.setOptimizationLevel(-1);
             Scriptable scope = context.initStandardObjects();
-            String result = context.evaluateString(scope, expression, "JavaScript", 1, null).toString();
-            if (result.endsWith(".0")) {
-                result = result.replace(".0", "");
+
+            // Evaluate the expression
+            Object result = context.evaluateString(scope, expression, "JavaScript", 1, null);
+
+            // Check if the result is undefined
+            if (result == Context.getUndefinedValue()) {
+                return "Err"; // Return an error message
             }
-            return result;
+
+            // Convert the result to a string
+            String resultString = Context.toString(result);
+
+            // If the result is an integer, remove the ".0" (if present)
+            if (resultString.endsWith(".0")) {
+                resultString = resultString.replace(".0", "");
+            }
+
+            return resultString;
         } catch (Exception e) {
-            return "Err";
+            return "Err"; // Return an error message
         } finally {
             Context.exit();
         }
